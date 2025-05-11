@@ -1,6 +1,6 @@
 # Nuclei Service
 
-A production-ready service for orchestrating Nuclei vulnerability scans at scale. Built with Go and designed for reliability.
+A production-ready service for orchestrating Nuclei vulnerability scans at scale.
 
 ## Overview
 
