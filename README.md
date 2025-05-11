@@ -1,6 +1,6 @@
 # Nuclei Service
 
-A production-ready service for orchestrating Nuclei vulnerability scans at scale.
+A demo service showcasing Nuclei vulnerability scanning capabilities.
 
 ## Overview
 
