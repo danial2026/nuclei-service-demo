@@ -1,0 +1,61 @@
+version: '3.3'
+
+services:
+  nuclei-service-demo:
+    container_name: nuclei-service-demo
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "3742:3742"
+    environment:
+      - SERVER_PORT=3742
+      - SERVER_HOST=0.0.0.0
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=nuclei
+      - NUCLEI_TEMPLATES_DIR=./templates
+      - NUCLEI_CONCURRENCY=10
+      - NUCLEI_RATE_LIMIT=100
+      - NUCLEI_TIMEOUT=30
+      - NUCLEI_RETRIES=3
+      - NUCLEI_HEADLESS=false
+      - NUCLEI_FOLLOW_REDIRECTS=true
+    volumes:
+      - ../templates:/templates
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - nuclei-network
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: nuclei-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nuclei
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - nuclei_data:/var/lib/postgresql/data
+    ports:
+      - "15432:5432"
+    restart: unless-stopped
+    networks:
+      - nuclei-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  nuclei_templates:
+  nuclei_data:
+
+networks:
+  nuclei-network:
+    driver: bridge
